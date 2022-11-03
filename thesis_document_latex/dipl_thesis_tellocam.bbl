@@ -1,0 +1,138 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.1 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\datalist[entry]{ynt/global//global/global}
+  \entry{nearly_conformal_paper}{article}{}
+    \name{author}{3}{}{%
+      {{hash=IJ}{%
+         family={Iglesias},
+         familyi={I\bibinitperiod},
+         given={José},
+         giveni={J\bibinitperiod},
+      }}%
+      {{hash=SK}{%
+         family={Sturm},
+         familyi={S\bibinitperiod},
+         given={Kevin},
+         giveni={K\bibinitperiod},
+      }}%
+      {{hash=WF}{%
+         family={Wechsung},
+         familyi={W\bibinitperiod},
+         given={Florian},
+         giveni={F\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{IJSKWF1}
+    \strng{fullhash}{IJSKWF1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{2}
+    \field{sortinithash}{2}
+    \verb{doi}
+    \verb https://doi.org/10.1137/17M1152711
+    \endverb
+    \field{pages}{A3807\bibrangedash A3830}
+    \field{title}{Two-{D}imensional {S}hape {O}ptimization with {N}early
+  {C}onformal {T}ransformations}
+    \field{volume}{40}
+    \field{journaltitle}{SIAM Journal on Scientific Computing}
+    \field{month}{01}
+    \field{year}{2018}
+  \endentry
+
+  \entry{fully_semi_paper_sturm}{article}{}
+    \name{author}{4}{}{%
+      {{hash=GP}{%
+         family={Gangl},
+         familyi={G\bibinitperiod},
+         given={Peter},
+         giveni={P\bibinitperiod},
+      }}%
+      {{hash=SK}{%
+         family={Sturm},
+         familyi={S\bibinitperiod},
+         given={Kevin},
+         giveni={K\bibinitperiod},
+      }}%
+      {{hash=NM}{%
+         family={Neunteufel},
+         familyi={N\bibinitperiod},
+         given={Michael},
+         giveni={M\bibinitperiod},
+      }}%
+      {{hash=SJ}{%
+         family={Sch{\"o}berl},
+         familyi={S\bibinitperiod},
+         given={Joachim},
+         giveni={J\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {Springer}%
+    }
+    \strng{namehash}{GPSKNM+1}
+    \strng{fullhash}{GPSKNMSJ1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{2}
+    \field{sortinithash}{2}
+    \verb{doi}
+    \verb https://doi.org/10.1007/s00158-020-02742-w
+    \endverb
+    \field{number}{3}
+    \field{pages}{1579\bibrangedash 1607}
+    \field{title}{Fully and {S}emi-automated {S}hape {D}ifferentiation in
+  {NGS}olve}
+    \field{volume}{63}
+    \field{journaltitle}{Structural and multidisciplinary optimization}
+    \field{year}{2021}
+  \endentry
+
+  \entry{lecture_notes_faustmann_numPDE}{article}{}
+    \name{author}{2}{}{%
+      {{hash=FM}{%
+         family={Faustmann},
+         familyi={F\bibinitperiod},
+         given={Markus},
+         giveni={M\bibinitperiod},
+      }}%
+      {{hash=SJ}{%
+         family={Schoeberl},
+         familyi={S\bibinitperiod},
+         given={Joachim},
+         giveni={J\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{2}{%
+      {TU Vienna Institute of Analysis}%
+      {Scientific Computing}%
+    }
+    \strng{namehash}{FMSJ1}
+    \strng{fullhash}{FMSJ1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{2}
+    \field{sortinithash}{2}
+    \field{title}{Lecture notes for {N}umerical {M}ethods for {PDE}'s - {TU}
+  {V}ienna {ASC}}
+    \field{month}{06}
+    \field{year}{2022}
+  \endentry
+\enddatalist
+\endinput

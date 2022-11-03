@@ -1,0 +1,67 @@
+This is BibTeX, Version 0.99d (TeX Live 2019/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: dipl_thesis_tellocam.aux
+The style file: biblatex.bst
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=200001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Database file #1: dipl_thesis_tellocam-blx.bib
+Database file #2: content/04_bibliography.bib
+Warning--I didn't find a database entry for "lagrangian_derivative"
+Biblatex version: 3.13
+Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+You've used 4 entries,
+            6365 wiz_defined-function locations,
+            1217 strings with 9722 characters,
+and the built_in function-call counts, 24155 in all, are:
+= -- 1614
+> -- 691
+< -- 187
++ -- 753
+- -- 333
+* -- 1629
+:= -- 2744
+add.period$ -- 0
+call.type$ -- 4
+change.case$ -- 91
+chr.to.int$ -- 72
+cite$ -- 6
+duplicate$ -- 2384
+empty$ -- 1961
+format.name$ -- 258
+if$ -- 4953
+int.to.chr$ -- 0
+int.to.str$ -- 8
+missing$ -- 0
+newline$ -- 135
+num.names$ -- 189
+pop$ -- 1120
+preamble$ -- 1
+purify$ -- 117
+quote$ -- 0
+skip$ -- 857
+stack$ -- 0
+substring$ -- 2680
+swap$ -- 590
+text.length$ -- 130
+text.prefix$ -- 3
+top$ -- 1
+type$ -- 124
+warning$ -- 0
+while$ -- 388
+width$ -- 0
+write$ -- 132
+(There was 1 warning)
