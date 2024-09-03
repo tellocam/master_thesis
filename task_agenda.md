@@ -1,7 +1,5 @@
 # Semester Week 4 - Tasks in descending due-date order: <br>
 
-## Advanced Programming in C++ EX1.1 - EX1.3
-Due till **07.11.2022** Monday November 7th 16:00
 
 ## Computational Science on Many-Core Architectures EX3:<br>
 Due till **08.11.2022** Tuesday November 8th
@@ -12,15 +10,6 @@ Due till **08.11.2022** Tuesday November 8th
       - Finalized part 1a and 1b with plots included in LaTeX
       - started with part 2a, something weird going on with the errors
         domi says its fine tho, 800mb memory leak, 1 error
-
-## Computational Finance EX3<br>
-Due till **09.11.2022** Wednesday November 8th
-
-## Advanced Methods for Regression and Classification EX3:<br>
-Due till **10.11.2022** Thursday November 10th
-
-## High Performance Computing EX1:<br>
-Due till **05.12.2022** Monday December 5th
 
 ## Non-Linear Coupled Field Problems
 No Tasks due so far BUT:
