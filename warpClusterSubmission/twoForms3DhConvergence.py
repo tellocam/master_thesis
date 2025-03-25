@@ -156,14 +156,13 @@ def L2errorBND(u, u_h, mesh, c=1):
     errorBND = Integrate(c*(u - u_h)**2*dS, mesh)
     return errorBND   
 # Create Geometry function
-def createGeometry(maxh):
-    geo = CSGeometry()
-    geo.Add (Sphere(Pnt(0,0,0), 0.5))
-    mesh = Mesh(geo.GenerateMesh(maxh=maxh))
-    mesh.Curve(2)
-    return mesh
+def createGeometry(n):
+    structuredMeshUnitBrick = MakeStructured3DMesh(hexes=False, nx=n, ny=n, nz=n)
+    return structuredMeshUnitBrick
 
 # Hodge Laplace for 2-forms function
+
+useGMRes = False
 
 def hodgeLaplace2Forms(mesh,
                        g = None, # this is the manufactured solution, when none is given we set it to the zero solution
@@ -178,9 +177,10 @@ def hodgeLaplace2Forms(mesh,
     fes = H_curl * H_div
     (p, u), (q, v) = fes.TnT()
 
-    n = CF((2*x, 2*y, 2*z)) # analytical normal vector of unit sphere with radius 0.5 and center (0,0,0)
+    n = specialcf.normal(mesh.dim)
+    #n = CF((2*x, 2*y, 2*z)) # analytical normal vector of unit sphere with radius 0.5 and center (0,0,0)
     h = specialcf.mesh_size
-    dS = ds(skeleton=True, definedon=mesh.Boundaries(".*"))
+    dS = ds(skeleton=True)
     f = CF(GCurl(GCurl(g)) - GGrad(GDiv(g)))                             
         
     B, F  = BilinearForm(fes), LinearForm(fes)
@@ -197,15 +197,24 @@ def hodgeLaplace2Forms(mesh,
     F += f * v * dx
     F += - div(v) * (g*n) * dS
     F +=  (C_w/h) * (g*n) * (v*n) * dS
-    F += - Cross(g, q) * n * dS
+    F += Cross(n, q) * g * dS
     
-    with TaskManager():
-        B.Assemble()
-        F.Assemble()
-        sol = GridFunction(fes)
-        res = F.vec-B.mat * sol.vec
-        inv = B.mat.Inverse(freedofs=fes.FreeDofs(), inverse="pardiso")
-        sol.vec.data += inv * res
+    with TaskManager(): 
+        if (useGMRes == False):
+            B.Assemble()
+            F.Assemble()
+            sol = GridFunction(fes)
+            res = F.vec-B.mat * sol.vec
+            inv = B.mat.Inverse(freedofs=fes.FreeDofs(), inverse="pardiso")
+            sol.vec.data += inv * res
+        else:
+            B.Assemble()
+            F.Assemble()
+            sol = GridFunction(fes)
+            blocks = fes.CreateSmoothingBlocks()
+            prebj = B.mat.CreateBlockSmoother(blocks)
+            GMRes(A =B.mat,x= sol.vec, b=F.vec,pre = prebj,  printrates="\r", maxsteps = 10000, tol=1e-8)
+            res = CF((0,0,0))
 
     gf_p , gf_u = sol.components
 
@@ -257,15 +266,22 @@ def hodgeLaplace2Forms(mesh,
 saveBigCSV = True
 
 g = CF((x**2 * sin(y) * z, - y**3 * cos(2*z)* 2*x, cos(1/3 * x) * z**(2)*sin(x)* 1/4*y))
-refinementVals = [0.5 , 0.15, 0.125, 0.1]
+
+refinementVals = [6, 10, 13, 17]
+#refinementVals = 3
 Cw_vals = logspace_custom_decades(10**0, 100, 25)
 orders = [1, 2, 3]
+
+# Cw_vals = [10]
+# refinementVals = [8]
+# orders = [1]
+
 
 maxh_values = [] 
 all_results = []
 
 for refinementVal in refinementVals:
-    
+
     mesh = createGeometry(refinementVal)
     h_max_eval = calc_hmax(mesh)
     maxh_values.append(h_max_eval)
