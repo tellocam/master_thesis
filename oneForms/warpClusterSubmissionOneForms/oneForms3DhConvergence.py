@@ -160,11 +160,10 @@ def createGeometry(n):
     structuredMeshUnitBrick = MakeStructured3DMesh(hexes=False, nx=n, ny=n, nz=n)
     return structuredMeshUnitBrick
 
-# Hodge Laplace for 2-forms function
-
+# Hodge Laplace for 1-forms function
 useGMRes = True
 
-def hodgeLaplace2Forms(mesh,
+def hodgeLaplace1Forms(mesh,
                        g = None, # this is the manufactured solution, when none is given we set it to the zero solution
                        order = 1,
                        C_w = 1):
@@ -173,31 +172,39 @@ def hodgeLaplace2Forms(mesh,
         g = CF((0,0,0))
 
     H_curl = HCurl(mesh, order=order, type1=True)  # For 1-forms, H(curl) space
-    H_div = HDiv(mesh, order=order-1, RT=True)     # For 2-forms, H div space
-    fes = H_curl * H_div
+    H_1 = H1(mesh, order=order)     # For 0-forms, H1 space
+    fes = H_1 * H_curl
     (p, u), (q, v) = fes.TnT()
 
     n = specialcf.normal(mesh.dim)
-    #n = CF((2*x, 2*y, 2*z)) # analytical normal vector of unit sphere with radius 0.5 and center (0,0,0)
     h = specialcf.mesh_size
-    dS = ds(skeleton=True)
+    t = specialcf.tangential(mesh.dim)
+    dS = ds(skeleton=True, definedon=mesh.Boundaries(".*"))
+
     f = CF(GCurl(GCurl(g)) - GGrad(GDiv(g)))                             
         
+    gamma_n_u = Cross(n, curl(u))
+    gamma_n_v = Cross(n, curl(v))
+
+    gamma_p_v = v - n*(v*n)
+    gamma_p_u = u - n*(u*n)
+    gamma_p_g = g - n*(g*n)
+
     B, F  = BilinearForm(fes), LinearForm(fes)
 
-    B += curl(p) * v * dx
-    B += div(u) * div(v) * dx
-    B += curl(q) * u * dx
+    B +=  curl(u) * curl(v) * dx
+    B +=  grad(p) * v * dx
+    B += u * grad(q) * dx
     B += - p * q * dx
 
-    B += - div(u) * (v*n) * dS
-    B += - div(v) * (u*n) * dS
-    B += (C_w/h) * (v*n) * (u*n) * dS
+    B += gamma_n_v * gamma_p_u * dS
+    B += gamma_p_v * gamma_n_u * dS
+    B += (C_w/h) * gamma_p_v * gamma_p_u * dS
 
     F += f * v * dx
-    F += - div(v) * (g*n) * dS
-    F +=  (C_w/h) * (g*n) * (v*n) * dS
-    F += Cross(n, q) * g * dS
+    F +=  (C_w / h) * gamma_p_g * gamma_p_v * dS
+    F +=  gamma_n_v * gamma_p_g * dS
+    F +=  (g*n) * q * ds
     
     with TaskManager(): 
         if (useGMRes == False):
@@ -208,6 +215,7 @@ def hodgeLaplace2Forms(mesh,
             inv = B.mat.Inverse(freedofs=fes.FreeDofs(), inverse="pardiso")
             sol.vec.data += inv * res
         else:
+            #with TaskManager():
             B.Assemble()
             F.Assemble()
             sol = GridFunction(fes)
@@ -215,59 +223,55 @@ def hodgeLaplace2Forms(mesh,
             prebj = B.mat.CreateBlockSmoother(blocks)
             GMRes(A =B.mat,x= sol.vec, b=F.vec,pre = prebj,  printrates="\r", maxsteps = 10000, tol=1e-8)
             res = CF((0,0,0))
+    
 
+    
     gf_p , gf_u = sol.components
 
     # Computation of all quantities needed to derive errors
-    div_u = div(gf_u)
-    curl_p = curl(gf_p)
-    div_g = CF(GDiv(g))
-    p_m =  CF(GCurl(g))
-    curl_p_m = CF(GCurl(p_m))
-
-    div_u_bnd = BoundaryFromVolumeCF(div_u)
-    div_g_bnd = BoundaryFromVolumeCF(div_g)
-
-    gf_gamma_u_n = CF(gf_u * n)
-    gf_gamma_g_n = CF(g * n)
-
-    gf_gamma_t_u = CF(Cross(n, gf_u))
-    gf_gamma_t_g = CF(Cross(n, g))
-
+    curl_u = curl(gf_u)
+    grad_p = grad(gf_p)
+    curl_g = CF(GCurl(g))
+    p_m = - CF(GDiv(g))
+    grad_p_m = CF(GGrad(p_m))
+    gf_gamma_p_u = CF((gf_u - n*(gf_u*n)))
+    gf_gamma_p_g = CF((g - n*(g*n)))
+    gf_gamma_n_u = BoundaryFromVolumeCF(curl_u)
+    gf_gamma_n_g = BoundaryFromVolumeCF(curl_g)
+    gf_u_n = CF(gf_u * n)
+    gf_g_n = CF(g * n)
     h_avg = 1 / Integrate(1, mesh, VOL) * Integrate(h, mesh, VOL)
-
     # Actual error evaluation
     # Computation of L2 errors in the volume
     E_u = L2errorVOL(gf_u, g, mesh)
-    E_div_u = L2errorVOL(div_u, div_g, mesh)
-    E_H_div_u = E_u + E_div_u
+    E_curl_u = L2errorVOL(curl_u, curl_g, mesh)
+    E_H_curl_u = E_u + E_curl_u
     E_p = L2errorVOL(gf_p, p_m, mesh)
-    E_curl_p = L2errorVOL(curl_p, curl_p_m, mesh)
+    E_grad_p = L2errorVOL(grad_p, grad_p_m, mesh)
     # Computation of L2 errors on the boundary
-    E_gamma_u_n = L2errorBND(gf_gamma_u_n, gf_gamma_g_n, mesh)
-    E_gamma_div_u = L2errorBND(div_u_bnd, div_g_bnd, mesh)
-    E_u_t_Gamma = L2errorBND(gf_gamma_t_u, gf_gamma_t_g, mesh)
+    E_gamma_p_u = L2errorBND(gf_gamma_p_u, gf_gamma_p_g, mesh)
+    E_gamma_n_u = L2errorBND(gf_gamma_n_u, gf_gamma_n_g, mesh)
+    E_u_n_Gamma = L2errorBND(gf_u_n, gf_g_n, mesh)
     # Hashtag and X Error norm
-    HT_E_gamma_u_n = h_avg**(-1)*E_gamma_u_n
-    HT_E_gamma_div_u = h_avg*E_gamma_div_u
-    HT_E_u = E_H_div_u + HT_E_gamma_u_n + HT_E_gamma_div_u
-    E_h_curl_p = h_avg**2 * E_curl_p
-    X_E_u_p = HT_E_u + E_p + E_h_curl_p
-
+    HT_E_gamma_p_u = h_avg**(-1)*E_gamma_p_u
+    HT_E_gamma_n_u = h_avg*E_gamma_n_u
+    HT_E_u = E_H_curl_u + HT_E_gamma_p_u + HT_E_gamma_n_u
+    E_h_grad_p = h_avg**2 * E_grad_p
+    X_E_u_p = HT_E_u + E_p + E_h_grad_p
     print(sqrt(E_u))
     return (fes.ndof, Norm(res), 
-            sqrt(E_u), sqrt(E_div_u), sqrt(E_H_div_u), 
-            sqrt(E_p), sqrt(E_curl_p), 
-            sqrt(E_u_t_Gamma), sqrt(E_gamma_u_n), 
-            sqrt(HT_E_gamma_u_n), sqrt(HT_E_gamma_div_u), sqrt(HT_E_u), sqrt(E_h_curl_p),
+            sqrt(E_u), sqrt(E_curl_u), sqrt(E_H_curl_u), 
+            sqrt(E_p), sqrt(E_grad_p), 
+            sqrt(E_gamma_p_u), sqrt(E_u_n_Gamma), 
+            sqrt(HT_E_gamma_p_u), sqrt(HT_E_gamma_n_u), sqrt(HT_E_u), sqrt(E_h_grad_p),
             sqrt(X_E_u_p))
 
 
 saveBigCSV = True
 
-g = CF((x**2 * sin(y) * z, - y**3 * cos(2*z)* 2*x, cos(1/3 * x) * z**(2)*sin(x)* 1/4*y))
+g = CF((x**2 * sin(y) * z, - y**3 * cos(z)* 2*x, cos(x) * z**2 * sin(x) * 1/4*y))
 
-refinementVals = [2, 3]
+refinementVals = [4, 6, 8, 10]
 #refinementVals = 3
 Cw_vals = logspace_custom_decades(10**0, 100, 25)
 orders = [1, 2, 3, 4]
